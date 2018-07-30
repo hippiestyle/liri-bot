@@ -30,9 +30,11 @@ client.get('search/tweets', {q: 'trump', count: tweetsNum }, function(error, twe
     for (var i =0; i < tweetsNum; i++) {
         //THIS BREAKS EVERY ONCE AND A WHILE???? cannot find text undefined. 
         console.log("\n=============")
-        console.log("Tweet #" + i + ": " + tweets.statuses[i].text)
+        console.log("Tweet: " + tweets.statuses[i].text)
         console.log("\nSent at: " + tweets.statuses[i].created_at)
         console.log("=============\n")
+        var twitterInfo = tweets.statuses[i].text + " " + tweets.statuses[i].created_at;
+        writeToLog(twitterInfo); 
         };
     };    
  });
@@ -42,13 +44,15 @@ function getSong(trackName) {
 // search: function({ type: 'artist OR album OR track', query: 'My search query', limit: 20 }, callback);
 spotify.search({ type: 'track', query: trackName, limit: 1, popularity: 80 }, function(err, data) {
     if (!err) {
-        var spotifyInput = data.tracks.items[0]; 
-        (console.log("\n=======START======\n"))
-        console.log("Artist: " + spotifyInput.album.artists[0].name); 
-        console.log("Release Date: " + spotifyInput.album.release_date);
-        console.log("Album Name: " + spotifyInput.name); 
-        console.log("External URL: " + spotifyInput.album.artists[0].href); 
-        (console.log("\n======END=======\n"))
+        var spot = data.tracks.items[0]; 
+        console.log("\n=============\n");
+        console.log("Artist: " + spot.album.artists[0].name); 
+        console.log("Release Date: " + spot.album.release_date);
+        console.log("Album Name: " + spot.name); 
+        console.log("External URL: " + spot.album.artists[0].href);
+        console.log("\n=============\n");
+        var spotifyInfo = " || " + spot.album.artists[0].name + " " +  spot.album.release_date + " " + spot.name + " " + spot.album.artists[0].href + " ";
+        writeToLog(spotifyInfo); 
     } else { 
             console.log("error occured: " + err); 
         }
@@ -96,8 +100,15 @@ if (input[2] === validateTwitter) {
     getMovie(movieName); 
 
 }
-
-
+function writeToLog(writeInput) {
+    fs.appendFile("log.txt", "\n" + writeInput, function(err) {
+        if (err) {
+            console.log("writeToLog Error: " + err)
+        } else { 
+            console.log("log.txt was updated")
+        }
+    }); 
+}
 //things that still need to be completed: 
 //1. I need to do the bonus - log to log.txt
 //2. i also need to make sure my twitter function is complete. 
